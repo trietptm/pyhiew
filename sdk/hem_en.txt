@@ -449,15 +449,15 @@ int HiewGate_Names_CountName()
 
 HEM_BYTE  *HiewGate_Names_GetLocal( HEM_QWORD offset, HEM_BYTE *retname, int retnameBufferLength )
     - get name by local offset
-    - returns NULL if found never
+    - returns NULL if not found
 
 HEM_BYTE  *HiewGate_Names_GetGlobal( HEM_QWORD offset, HEM_BYTE *retname, int retnameBufferLength )
     - get name by global offset
-    - returns NULL if found never
+    - returns NULL if not found
 
 HEM_QWORD  HiewGate_Names_FindName( HEM_BYTE *name )
     - get offset by name
-    - returns NULL if found never
+    - returns HEM_OFFSET_NOT_FOUND if not found
 
 int  HiewGate_Names_AddLocalComment( HEM_QWORD offset, HEM_BYTE *comment )
     - add comment for local offset
@@ -486,10 +486,10 @@ HEM_QWORD  HiewGate_Local2Global( HEM_QWORD offsetLocal )
     - returns HEM_OFFSET_NOT_FOUND if conversion failed
 
 HEM_QWORD  HiewGate_Find( int flags, HEM_QWORD offset, HEM_BYTE *pData, int dataLength /* <= 20 */, HEM_BYTE *pMask )
-    - returns NULL if found never
+    - returns NULL if not found
 
 HEM_QWORD  HiewGate_FindNext( void )
-    - returns NULL if found never
+    - returns NULL if not found
 
 
 

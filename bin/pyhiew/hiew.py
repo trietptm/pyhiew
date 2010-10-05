@@ -542,12 +542,12 @@ class Window(Control):
         Static method to quickly construct a window from a string with
         embedded new lines
         @param title: The window title
-        @param msg: The message (containing embedded new lines)
+        @param msg: The message (containing embedded new lines) or an array of lines
         """
         w = Window()
         r = w.Create(
             title = title,
-            lines = msg.split('\n'),
+            lines = (msg.split('\n') if isinstance(msg, str) else msg),
             width = width)
         w.Show()
 
@@ -590,6 +590,19 @@ class Data(object):
         self.sizeMark = sizeMark
 
     @staticmethod
+    def GetCurrentOffset():
+        """Returns the current file offset"""
+        return GetData().offsetCurrent
+
+    @staticmethod
+    def GetFileName():
+        """
+        Returns the opened file name
+        """
+        d = GetData()
+        return d.filename
+
+    @staticmethod
     def GetSel():
         """
         Returns selection information
@@ -609,6 +622,153 @@ class Data(object):
 
         r, s = FileRead(sel[0], sel[2])
         return None if not r else s
+
+# -----------------------------------------------------------------------
+class Names(object):
+    """Name management class"""
+    @staticmethod
+    def Clear():
+        """Clear all names"""
+        return _hiew.HiewGate_Names_Clear()
+
+
+    @staticmethod
+    def AddLocal(offset, name):
+        """
+        Adds a local name
+
+        @param offset: the offset to add the name at
+        @param name: local name
+        """
+        return _hiew.HiewGate_Names_AddLocal(offset, name)
+
+
+    @staticmethod
+    def AddGlobal(offset, name):
+        """
+        Adds a global name
+
+        @param offset: the offset to add the name at
+        @param name: global name
+        """
+        return _hiew.HiewGate_Names_AddGlobal(offset, name)
+
+
+    @staticmethod
+    def AddLocalComment(offset, comment):
+        """
+        Adds a local comment
+
+        @param offset: the offset
+        @param comment: comment
+        """
+        return _hiew.HiewGate_Names_AddLocalComment(offset, comment)
+
+
+    @staticmethod
+    def AddGlobalComment(offset, comment):
+        """
+        Adds a global comment
+
+        @param offset: the offset
+        @param comment: comment
+        """
+        return _hiew.HiewGate_Names_AddGlobalComment(offset, comment)
+
+
+    @staticmethod
+    def DelGlobalComment(offset):
+        """
+        Deletes a global comment
+
+        @param offset: the offset
+        """
+        return _hiew.HiewGate_Names_DelGlobalComment(offset)
+
+
+    @staticmethod
+    def DelLocalComment(offset):
+        """
+        Deletes a local comment
+
+        @param offset: the offset
+        """
+        return _hiew.HiewGate_Names_DelLocalComment(offset)
+
+
+    @staticmethod
+    def DelLocal(offset):
+        """
+        Deletes a local name
+
+        @param offset: the offset
+        """
+        return _hiew.HiewGate_Names_DelLocal(offset)
+
+
+    @staticmethod
+    def DelGlobal(offset):
+        """
+        Deletes a global name
+
+        @param offset: the offset
+        """
+        return _hiew.HiewGate_Names_DelGlobal(offset)
+
+
+    @staticmethod
+    def CountLocal():
+        """
+        Returns the local names count
+        """
+        return _hiew.HiewGate_Names_CountLocal()
+
+
+    @staticmethod
+    def CountGlobal():
+        """
+        Returns the global names count
+        """
+        return _hiew.HiewGate_Names_CountGlobal()
+
+
+    @staticmethod
+    def CountNames():
+        """
+        Returns all the name count
+        """
+        return _hiew.HiewGate_Names_CountName()
+
+
+    @staticmethod
+    def FindName(name):
+        """
+        Finds any name
+
+        @return: tuple(name offset, local ? 1 : 0) or None
+        """
+        return _hiew.HiewGate_Names_FindName(name)
+
+
+    @staticmethod
+    def FindLocalName(name):
+        """
+        Finds a local name
+        """
+        r = Names.FindName(name)
+        return None if r is None or r[1] == 0 else r[0]
+
+
+    @staticmethod
+    def FindGlobalName(name):
+        """
+        Finds a global name
+
+        @return: Global name offset
+        """
+        r = Names.FindName(name)
+        return None if r is None or r[1] != 0 else r[0]
+
 
 # -----------------------------------------------------------------------
 def MessageBox(message, title = 'Info'):

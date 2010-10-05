@@ -1,3 +1,6 @@
+"""
+PyHiew ScriptBrowser startup script (c) Elias Bachaalany
+"""
 import hiew
 from hiew import Menu
 from glob import glob
