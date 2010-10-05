@@ -33,8 +33,8 @@
 #define   PYHIEW_VAR_PYHIEWPATH        "PYHIEW_PATH" // Hiew32\pyhiew path
 #define   PYHIEW_VAR_VERSION           "PYHIEW_VERSION" // pyhiew version
 #define   PYHIEW_VER_MAJOR             "0"
-#define   PYHIEW_VER_MINOR             "1"
-#define   PYHIEW_VER_BUILD             "1"
+#define   PYHIEW_VER_MINOR             "2"
+#define   PYHIEW_VER_BUILD             "0"
 
 //--------------------------------------------------------------------------
 extern HEMINFO_TAG hem_pyhiew;
@@ -760,6 +760,134 @@ static PyObject *py_ControlClear(PyObject *, PyObject *args)
 }
 
 //--------------------------------------------------------------------------
+//int HiewGate_Names_Clear();
+static PyObject *py_HiewGate_Names_Clear(PyObject *, PyObject *)
+{
+  return PyInt_FromLong(HiewGate_Names_Clear());
+}
+
+//--------------------------------------------------------------------------
+//int HiewGate_Names_CountName();
+static PyObject *py_HiewGate_Names_CountName(PyObject *, PyObject *)
+{
+  return PyInt_FromLong(HiewGate_Names_CountName());
+}
+
+//--------------------------------------------------------------------------
+//int HiewGate_Names_FindName(HEM_BYTE *name, int *bLocal)
+static PyObject *py_HiewGate_Names_FindName(PyObject *, PyObject *args)
+{
+  HEM_BYTE *name;
+  if (!PyArg_ParseTuple(args, "s", &name))
+    Py_RETURN_NONE;
+  // Returns a tuple(offset, bIsLocal)
+  int bLocal;
+  HEM_QWORD offs = HiewGate_Names_FindName(name, &bLocal);
+  if (offs == HEM_OFFSET_NOT_FOUND)
+    Py_RETURN_NONE;
+  else
+    return Py_BuildValue("Ki", offs, bLocal != 0);
+}
+
+//--------------------------------------------------------------------------
+//int HiewGate_Names_AddGlobalComment(HEM_QWORD offset, HEM_BYTE *comment);
+static PyObject *py_HiewGate_Names_AddGlobalComment(PyObject *, PyObject *args)
+{
+  HEM_QWORD offset;
+  HEM_BYTE *name;
+  if (!PyArg_ParseTuple(args, "Ks", &offset, &name))
+    Py_RETURN_NONE;
+
+  return PyInt_FromLong(HiewGate_Names_AddGlobalComment(offset, name));
+}
+
+//--------------------------------------------------------------------------
+//int HiewGate_Names_AddLocalComment(HEM_QWORD offset, HEM_BYTE *comment);
+static PyObject *py_HiewGate_Names_AddLocalComment(PyObject *, PyObject *args)
+{
+  HEM_QWORD offset;
+  HEM_BYTE *name;
+  if (!PyArg_ParseTuple(args, "Ks", &offset, &name))
+    Py_RETURN_NONE;
+
+  return PyInt_FromLong(HiewGate_Names_AddLocalComment(offset, name));
+}
+
+//--------------------------------------------------------------------------
+//int HiewGate_Names_AddLocal(HEM_QWORD offset, HEM_BYTE *name);
+static PyObject *py_HiewGate_Names_AddLocal(PyObject *, PyObject *args)
+{
+  HEM_QWORD offset;
+  HEM_BYTE *name;
+  if (!PyArg_ParseTuple(args, "Ks", &offset, &name))
+    Py_RETURN_NONE;
+  
+  return PyInt_FromLong(HiewGate_Names_AddLocal(offset, name));
+}
+
+//--------------------------------------------------------------------------
+//int HiewGate_Names_AddGlobal(HEM_QWORD offset, HEM_BYTE *name);
+static PyObject *py_HiewGate_Names_AddGlobal(PyObject *, PyObject *args)
+{
+  HEM_QWORD offset;
+  HEM_BYTE *name;
+  if (!PyArg_ParseTuple(args, "Ks", &offset, &name))
+    Py_RETURN_NONE;
+
+  return PyInt_FromLong(HiewGate_Names_AddGlobal(offset, name));
+}
+
+//--------------------------------------------------------------------------
+static PyObject *py_HiewGate_Names_DelGlobalComment(PyObject *, PyObject *args)
+{
+  HEM_QWORD offset;
+  if (!PyArg_ParseTuple(args, "K", &offset))
+    return NULL;
+  return PyInt_FromLong(HiewGate_Names_DelGlobalComment(offset));
+}
+
+//--------------------------------------------------------------------------
+static PyObject *py_HiewGate_Names_DelLocalComment(PyObject *, PyObject *args)
+{
+  HEM_QWORD offset;
+  if (!PyArg_ParseTuple(args, "K", &offset))
+    return NULL;
+  return PyInt_FromLong(HiewGate_Names_DelLocalComment(offset));
+}
+
+//--------------------------------------------------------------------------
+static PyObject *py_HiewGate_Names_DelLocal(PyObject *, PyObject *args)
+{
+  HEM_QWORD offset;
+  if (!PyArg_ParseTuple(args, "K", &offset))
+    return NULL;
+  return PyInt_FromLong(HiewGate_Names_DelLocal(offset));
+}
+
+//--------------------------------------------------------------------------
+static PyObject *py_HiewGate_Names_DelGlobal(PyObject *, PyObject *args)
+{
+  HEM_QWORD offset;
+  if (!PyArg_ParseTuple(args, "K", &offset))
+    return NULL;
+  return PyInt_FromLong(HiewGate_Names_DelGlobal(offset));
+}
+
+//--------------------------------------------------------------------------
+//int HiewGate_Names_CountLocal();
+static PyObject *py_HiewGate_Names_CountLocal(PyObject *, PyObject *)
+{
+  return PyInt_FromLong(HiewGate_Names_CountLocal());
+}
+
+//--------------------------------------------------------------------------
+//int HiewGate_Names_CountGlobal();
+static PyObject *py_HiewGate_Names_CountGlobal(PyObject *, PyObject *)
+{
+  return PyInt_FromLong(HiewGate_Names_CountGlobal());
+}
+
+//--------------------------------------------------------------------------
 static PyObject *py_od(PyObject *, PyObject *args)
 {
   // od(msg) -> None
@@ -904,6 +1032,21 @@ static PyMethodDef pyhiew_methods[] =
   DEF_PY_METHOD(HiewGate_FileWrite),
   DEF_PY_METHOD(HiewGate_Find),
   DEF_PY_METHOD(HiewGate_FindNext),
+
+  // Names
+  DEF_PY_METHOD(HiewGate_Names_Clear),
+  DEF_PY_METHOD(HiewGate_Names_AddLocal),
+  DEF_PY_METHOD(HiewGate_Names_AddGlobal),
+  DEF_PY_METHOD(HiewGate_Names_AddLocalComment),
+  DEF_PY_METHOD(HiewGate_Names_AddGlobalComment),
+  DEF_PY_METHOD(HiewGate_Names_CountLocal),
+  DEF_PY_METHOD(HiewGate_Names_CountGlobal),
+  DEF_PY_METHOD(HiewGate_Names_CountName),
+  DEF_PY_METHOD(HiewGate_Names_DelGlobalComment),
+  DEF_PY_METHOD(HiewGate_Names_DelLocalComment),
+  DEF_PY_METHOD(HiewGate_Names_DelLocal),
+  DEF_PY_METHOD(HiewGate_Names_DelGlobal),
+  DEF_PY_METHOD(HiewGate_Names_FindName),
 
   // Return
   DEF_PY_METHOD(ReturnOffset),
