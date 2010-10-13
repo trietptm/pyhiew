@@ -368,6 +368,20 @@ def SetErrorMsg(error_msg):
     return _hiew.HiewGate_SetErrorMsg(error_msg)
 
 # -----------------------------------------------------------------------
+#int        HiewGate_Names_DelName( HEM_BYTE *name );
+#HEM_BYTE  *HiewGate_Names_GetLocal( HEM_QWORD offset, HEM_BYTE *retname, int retnameBufferLength );
+#HEM_BYTE  *HiewGate_Names_GetGlobal( HEM_QWORD offset, HEM_BYTE *retname, int retnameBufferLength );
+#HEM_BYTE  *HiewGate_Names_GetLocalComment( HEM_QWORD offset, HEM_BYTE *retname, int retnameBufferLength );
+#HEM_BYTE  *HiewGate_Names_GetGlobalComment( HEM_QWORD offset, HEM_BYTE *retname, int retnameBufferLength );
+
+#HEM_QWORD  HiewGate_Global2Local( HEM_QWORD offsetGlobal );
+#HEM_QWORD  HiewGate_Local2Global( HEM_QWORD offsetLocal );
+
+# -----------------------------------------------------------------------
+#int        HiewGate_GetHem2HemGate( HIEWGATE_GETHEM2HEMGATE *tag, HEM_BYTE *shortName );
+
+
+# -----------------------------------------------------------------------
 def _make_keys(key_def):
     """
     Constructs a hiew keys line string
@@ -474,6 +488,8 @@ class Control(object):
 
         # Bind
         self.__control = r
+
+        self.__is_window = is_window
         return True
 
 
@@ -488,13 +504,17 @@ class Control(object):
             return HEM_ERR_INVALID_ARGUMENT
 
         r, fnkey = _hiew.ControlShow(self.__control, sel_line)
-        if r <= 0:
-            return (-1, 0)
+        if self.__is_window:
+            return (r, fnkey)
         else:
-            return (r-1, fnkey)
+            if r <= 0:
+                return (-1, 0)
+            else:
+                return (r-1, fnkey)
 
 # -----------------------------------------------------------------------
 class Menu(Control):
+    """Menu control"""
     def __init__(self):
         Control.__init__(self)
 
@@ -526,30 +546,50 @@ class Menu(Control):
 
 # -----------------------------------------------------------------------
 class Window(Control):
+    """Window control"""
     def __init__(self):
         Control.__init__(self)
 
 
     def Show(self):
         """
-        Shows the main window. Refer to Control.Show()
+        Shows the main window.
+
+        Refer to Control.Show()
+
+        @return: (n=0, fnkey)
         """
         return Control.Show(self)
 
+
     @staticmethod
-    def FromString(title, msg, width = 70):
+    def FromString(
+        title,
+        msg,
+        width = 70,
+        main_keys = "",
+        alt_keys = "",
+        ctrl_keys = "",
+        shift_keys = ""):
         """
         Static method to quickly construct a window from a string with
         embedded new lines
         @param title: The window title
         @param msg: The message (containing embedded new lines) or an array of lines
+
+        @return: (n=0, fnkey)
         """
         w = Window()
         r = w.Create(
             title = title,
             lines = (msg.split('\n') if isinstance(msg, str) else msg),
-            width = width)
-        w.Show()
+            width = width,
+            main_keys = main_keys,
+            alt_keys = alt_keys,
+            ctrl_keys = ctrl_keys,
+            shift_keys = shift_keys)
+
+        return w.Show()
 
 
     def Create(self,
