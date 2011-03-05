@@ -51,6 +51,8 @@ class StringsScript(object):
 
         # Extract strings
         self.cache = self.get_strings_from_file(filename)
+        if not self.cache:
+            return False
 
         # No strings? Display an info line
         main_keys = {5: "ReLoad"}
@@ -73,6 +75,7 @@ class StringsScript(object):
             main_keys = main_keys,
             shift_keys = shift_keys)
 
+        return True
 
 
     def search(self):
@@ -102,7 +105,10 @@ class StringsScript(object):
 
         filename = self.FileName
         if self.last_filename != filename:
-            self.refresh()
+            if not self.refresh():
+                hiew.Window.FromString("Error", "Strings utility from SysInternals is not present")
+                return False
+
             self.last_filename = filename
 
         while True:
@@ -135,8 +141,9 @@ class StringsScript(object):
 
             break
 
+        return True
+
 # -----------------------------------------------------------------------
-#def testMain():
 def StringsMain():
     global STRINGS_SCRIPT
     try:

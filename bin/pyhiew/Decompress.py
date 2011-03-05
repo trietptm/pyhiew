@@ -23,7 +23,7 @@ def hiew_main():
     try:
         ubuf = zlib.decompress(buf)
     except:
-        hiew.Message("Failed to decompress buffer!")
+        hiew.Message("Error", "Failed to decompress buffer!")
         return
 
     # Get filename
@@ -37,7 +37,10 @@ def hiew_main():
         f = open(fn, 'wb')
         f.write(ubuf)
         f.close()
+
+        # Remember decompressed file name
         DECOMPRESS_FILENAME = fn
+
         hiew.Message("Okay", "Decompressed successfully!")
     except:
         hiew.Message("Error", "Failed to write decompressed data!")
@@ -48,7 +51,5 @@ try:
     DECOMPRESS_FILENAME
 except:
     DECOMPRESS_FILENAME = ""
-
-#hiew.MarkBlock(0x9c5, 0xc36)
 
 hiew_main()

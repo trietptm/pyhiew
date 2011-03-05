@@ -1,5 +1,10 @@
 """
-PyHiew ScriptBrowser startup script (c) Elias Bachaalany
+PyHiew ScriptBrowser startup script
+
+This script acts like a shell. It displays other scripts found in the pyhiew directory
+and allows the user to executes them.
+
+(c) Elias Bachaalany
 """
 import hiew
 from hiew import Menu
@@ -26,10 +31,11 @@ class PyScriptBrowser(Menu):
         self.lastsel = 0
 
         for fn in glob(hiew.PYHIEW_PATH + '\\*.py'):
-            # strip path and extension
+            # Strip path and extension
             short_fn = fn[L:-3]
             if short_fn in hiew.PYHIEW_EXCLUDED_SCRIPTS:
                 continue
+
             self.files.append(short_fn)
 
         # No files?
@@ -80,6 +86,7 @@ class PyScriptBrowser(Menu):
                     script_fn,
                     globals(),
                     True)
+
             if err is not None:
                 hiew.Window.FromString(" Script error ", err)
 
