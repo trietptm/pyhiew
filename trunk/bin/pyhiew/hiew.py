@@ -1,3 +1,6 @@
+# -----------------------------------------------------------------------
+# PyHiew - Python bindings for the Hiew SDK
+# (c) Elias Bachaalany
 import _hiew
 import traceback
 import os
@@ -29,6 +32,7 @@ PYHIEW_STARTUP_SCRIPT = None
 PYHIEW_STARTUP_DICT = None
 PYHIEW_STARTUP_FUNCTION = None
 PYHIEW_STARTUP_SCRIPT_EXECUTED = False
+
 # Script browser excluded scripts
 PYHIEW_EXCLUDED_SCRIPTS = set(['init', 'hiew', '_hiew'])
 
@@ -255,7 +259,9 @@ def GetLastResult():
 # -----------------------------------------------------------------------
 #int HiewGate_Message(HEM_BYTE *title, HEM_BYTE *msg);
 def Message(title, msg):
-    """Displays single-line message to user"""
+    """
+    Displays single-line message to user
+    """
     return _hiew.HiewGate_Message(title, msg)
 
 # -----------------------------------------------------------------------
@@ -815,6 +821,10 @@ def MessageBox(message, title = 'Info'):
     return _hiew.MessageBox(title, message)
 
 # -----------------------------------------------------------------------
+dbg = lambda msg: _hiew.od(msg)
+"""Output debug string"""
+
+# -----------------------------------------------------------------------
 def ReturnOffset(offset):
     """
     Changes the offset upon the script termination
@@ -844,6 +854,32 @@ def ReturnReload():
     Reloads the file upon script termination
     """
     return _hiew.ReturnReload()
+
+
+# -----------------------------------------------------------------------
+def AskYesNo(msg,
+            title='Please confirm',
+            width=70,
+            yesno_keys={1: "Yes", 2: "No"}):
+    """
+    Creates a window and prompts the user to answer Yes or No
+
+    @return: Boolean. False = No, True = Yes
+    """
+    w = Window()
+    k = w.Create(title,
+             msg.split('\n'),
+             width=width,
+             main_keys=yesno_keys)
+    if not k:
+        return False
+
+    while True:
+        ln, k = w.Show()
+        if k == HEM_FNKEY_F1:
+            return True
+        elif k == HEM_FNKEY_F2:
+            return False
 
 # -----------------------------------------------------------------------
 def PyHiew_ExecuteScript(script, g, strip_path = False):
@@ -890,7 +926,14 @@ def PyHiew_ExecuteCallable(func_name, g, *args, **kwargs):
     return PY_COMPILE_ERR
 
 # -----------------------------------------------------------------------
-def SetStarupScript(st_script, st_dict, st_func):
+def PyHiew_GetScriptFileName(script):
+    """
+    Given a script name it returns its full path relative to PYHIEW_PATH
+    """
+    return '%s\\%s.py' % (PYHIEW_PATH, script)
+
+# -----------------------------------------------------------------------
+def SetStartupScript(st_script, st_dict, st_func):
     global PYHIEW_EXCLUDED_SCRIPTS, PYHIEW_STARTUP_DICT, PYHIEW_STARTUP_FUNCTION, PYHIEW_STARTUP_SCRIPT
 
     # Strip extension
@@ -914,13 +957,6 @@ def SetStarupScript(st_script, st_dict, st_func):
 
     # Add startup script to the exclusion list
     PYHIEW_EXCLUDED_SCRIPTS.add(st_script)
-
-# -----------------------------------------------------------------------
-def PyHiew_GetScriptFileName(script):
-    """
-    Given a script name it returns its full path relative to PYHIEW_PATH
-    """
-    return '%s\\%s.py' % (PYHIEW_PATH, script)
 
 # -----------------------------------------------------------------------
 def PyHiew_Main():

@@ -10,7 +10,8 @@
 //--------------------------------------------------------------------------
 // Test script
 //#define TESTMODE
-#ifndef TESTMODE
+
+#ifdef TESTMODE
   #define PYHIEW_TESTSCRIPT "\\test.py"
 #endif
 
@@ -34,7 +35,7 @@
 #define   PYHIEW_VAR_VERSION           "PYHIEW_VERSION" // pyhiew version
 #define   PYHIEW_VER_MAJOR             "0"
 #define   PYHIEW_VER_MINOR             "2"
-#define   PYHIEW_VER_BUILD             "0"
+#define   PYHIEW_VER_BUILD             "1"
 
 //--------------------------------------------------------------------------
 extern HEMINFO_TAG hem_pyhiew;
@@ -131,10 +132,10 @@ bool InitPyHiew()
   // Set the version info in the Hiew module
   PyObject *py_val;
   py_val = Py_BuildValue(
-    "{" "s:i" "s:i" "s:i" "s:i" "}", 
-    "major", hiewVerMajor, 
-    "minor", hiewVerMinor, 
-    "sdkmajor", hiewSdkVerMajor, 
+    "{" "s:i" "s:i" "s:i" "s:i" "}",
+    "major", hiewVerMajor,
+    "minor", hiewVerMinor,
+    "sdkmajor", hiewSdkVerMajor,
     "sdkminor", hiewSdkVerMinor);
 
   PyDict_SetItemString(py_hiewcmod_dict, HEM_PYHIEW_VERSION, py_val);
@@ -147,9 +148,9 @@ bool InitPyHiew()
 
   // Set pyhiew version
   py_val = Py_BuildValue(
-    "{" "s:s" "s:s" "s:s" "}", 
-    "major", PYHIEW_VER_MAJOR, 
-    "minor", PYHIEW_VER_MINOR, 
+    "{" "s:s" "s:s" "s:s" "}",
+    "major", PYHIEW_VER_MAJOR,
+    "minor", PYHIEW_VER_MINOR,
     "build", PYHIEW_VER_BUILD);
   PyDict_SetItemString(py_hiewcmod_dict, PYHIEW_VAR_VERSION, py_val);
   Py_DECREF(py_val);
@@ -821,7 +822,7 @@ static PyObject *py_HiewGate_Names_AddLocal(PyObject *, PyObject *args)
   HEM_BYTE *name;
   if (!PyArg_ParseTuple(args, "Ks", &offset, &name))
     Py_RETURN_NONE;
-  
+
   return PyInt_FromLong(HiewGate_Names_AddLocal(offset, name));
 }
 

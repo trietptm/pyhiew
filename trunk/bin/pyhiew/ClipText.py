@@ -37,7 +37,15 @@ def buf_to_c_array(buf):
             i += 1
     out = ''.join(out).rstrip()[:-1]
     return ('static unsigned char data[%d] = \n{\n\t%s\n};' %
-            (len(buf), out))
+            (len(buf)-1, out))
+
+# -----------------------------------------------------------------------
+def buf_to_python_string(buf):
+    out = []
+    for ch in buf:
+        out.append('\\%02x' % ord(ch))
+    out = ''.join(out)
+    return ('"%s"' % out)
 
 # -----------------------------------------------------------------------
 def buf_to_pascal_array(buf):
@@ -83,7 +91,8 @@ def hiew_main():
             lines = ["Copy as plain text",    #0
                      "Copy as C array",       #1
                      "Copy as Pascal array",  #2
-                     #"Paste plain text"       #3
+                     "Copy as Python string", #3
+                     #"Paste plain text"       #4
                      ],
             width = 30)
 
@@ -98,6 +107,9 @@ def hiew_main():
             if copy_text_to_clipboard(buf_to_pascal_array(buf)):
                 hiew.Message("Info", "Copied to clipboard as pascal array!")
         elif n == 3:
+            if copy_text_to_clipboard(buf_to_python_string(buf)):
+                hiew.Message("Info", "Copied to clipboard as pascal array!")
+        elif n == 4:
             # paste from clipboard to file
             pass
         else:
