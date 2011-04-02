@@ -280,7 +280,8 @@ class HiewFo(object):
 
     def read(self, sz):
         rc, buf = hiew.FileRead(self.seek, sz)
-        self.seek += 1
+        if buf:
+            self.seek += sz
         return buf
 
 

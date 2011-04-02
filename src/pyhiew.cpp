@@ -34,8 +34,8 @@
 #define   PYHIEW_VAR_PYHIEWPATH        "PYHIEW_PATH" // Hiew32\pyhiew path
 #define   PYHIEW_VAR_VERSION           "PYHIEW_VERSION" // pyhiew version
 #define   PYHIEW_VER_MAJOR             "0"
-#define   PYHIEW_VER_MINOR             "2"
-#define   PYHIEW_VER_BUILD             "1"
+#define   PYHIEW_VER_MINOR             "3"
+#define   PYHIEW_VER_BUILD             "0"
 
 //--------------------------------------------------------------------------
 extern HEMINFO_TAG hem_pyhiew;
@@ -948,15 +948,15 @@ int HEM_API Hem_EntryPoint(HEMCALL_TAG *hemCall)
     g_init_executed = true;
   }
 
-#ifndef TESTMODE
-  PyObject *py_result = PyObject_CallFunction(py_hiewmain_func, NULL);
-  Py_XDECREF(py_result);
-#else
+#ifdef TESTMODE
   char fn[MAX_PATH] = {0};
   strncpy(fn, pyhiew_path, sizeof(fn));
   strncat(fn, PYHIEW_TESTSCRIPT, sizeof(fn));
   if (!PyRunFile(fn))
     _getch();
+#else
+  PyObject *py_result = PyObject_CallFunction(py_hiewmain_func, NULL);
+  Py_XDECREF(py_result);
 #endif
   return g_HemEntryPointReturn;
 }
