@@ -1,0 +1,1 @@
+PyHiew is a Hiew External Module that allows users to write Python scripts that interface with Hiew (http://www.hiew.ru/)
